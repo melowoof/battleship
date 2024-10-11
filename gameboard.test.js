@@ -13,18 +13,30 @@ describe("Gameboard test", () => {
     expect(gameboard.size).toBe(100);
   });
 
-  test("ship is correctly placed on tile", () => {
+  test("ship is correctly placed horizontally on tile", () => {
     const ship = new Ship(3);
 
-    gameboard.placeShip("3,4", "horizontal", ship);
+    gameboard.placeShip(ship, "3,4", "horizontal");
 
     expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
+    expect(gameboard.gameboard.get("3,5").ship).toBe(ship);
+    expect(gameboard.gameboard.get("3,6").ship).toBe(ship);
+  });
+    
+  test("ship is correctly placed vertically on tile", () => {
+    const ship = new Ship(3);
+
+    gameboard.placeShip(ship, "3,4", "vertical");
+
+    expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
+    expect(gameboard.gameboard.get("4,4").ship).toBe(ship);
+    expect(gameboard.gameboard.get("5,4").ship).toBe(ship);
   });
 
   test("ship should be sunk", () => {
     const ship = new Ship(3);
 
-    gameboard.placeShip("3,4", "horizontal", ship);
+    gameboard.placeShip(ship, "3,4", "horizontal");
     gameboard.receiveAttack("3,4");
     gameboard.receiveAttack("3,5");
     gameboard.receiveAttack("3,6");
@@ -35,7 +47,7 @@ describe("Gameboard test", () => {
   test("number of ships left should be 0", () => {
     const ship = new Ship(3);
 
-    gameboard.placeShip("3,4", "horizontal", ship);
+    gameboard.placeShip(ship, "3,4", "horizontal");
     expect(gameboard.shipsLeft()).toBe(1);
 
     gameboard.receiveAttack("3,4");

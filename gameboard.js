@@ -1,5 +1,3 @@
-import { Ship } from "./ship";
-
 export class Gameboard {
   constructor() {
     this.gameboard = this.initGameboard(10);
@@ -21,7 +19,7 @@ export class Gameboard {
     return this.gameboard.size;
   }
 
-  placeShip(coords, direction, ship) {
+  placeShip(ship, coords, direction = "horizontal") {
     const tilesArray = [];
     let currentCoords;
 
@@ -46,7 +44,7 @@ export class Gameboard {
         if (this.gameboard.get(currentCoords).ship !== null) {
           return false;
         } else {
-          tilesArray.set(currentCoords);
+          tilesArray.push(currentCoords);
         }
       }
     }
