@@ -22,26 +22,35 @@ export class Gameboard {
   placeShip(ship, coords, direction = "horizontal") {
     const tilesArray = [];
     let currentCoords;
+    // console.log(this.gameboard);
 
     for (let i = 0; i < ship.length; i++) {
       // Check for whether selected tiles are empty
 
       if (direction === "horizontal") {
-        currentCoords = `${coords.split(",")[0]},${
-          Number(coords.split(",")[1]) + i
-        }`;
+        let YCoords = Number(coords.split(",")[1]) + i;
+        currentCoords = `${coords.split(",")[0]},${YCoords}`;
 
-        if (this.gameboard.get(currentCoords).ship !== null) {
+        console.log(currentCoords, this.gameboard.get(currentCoords));
+        if (
+          YCoords < 0 ||
+          YCoords > 9 ||
+          this.gameboard.get(currentCoords).ship !== null
+        ) {
           return false;
         } else {
           tilesArray.push(currentCoords);
         }
       } else if (direction === "vertical") {
-        currentCoords = `${Number(coords.split(",")[0]) + i},${
-          coords.split(",")[1]
-        }`;
+        let XCoords = Number(coords.split(",")[0]) + i;
+        currentCoords = `${XCoords},${coords.split(",")[1]}`;
 
-        if (this.gameboard.get(currentCoords).ship !== null) {
+        console.log(currentCoords, this.gameboard.get(currentCoords));
+        if (
+          XCoords < 0 ||
+          XCoords > 9 ||
+          this.gameboard.get(currentCoords).ship !== null
+        ) {
           return false;
         } else {
           tilesArray.push(currentCoords);

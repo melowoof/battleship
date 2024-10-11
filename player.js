@@ -1,4 +1,4 @@
-import { Gameboard } from "./gameboard";
+import { Gameboard } from "./gameboard.js";
 
 export class Player {
   constructor(type) {
@@ -12,7 +12,7 @@ export class Player {
   }
 
   placeShip(ship, coords, direction) {
-      this.gameboard.placeShip(ship, coords, direction);
+      return this.gameboard.placeShip(ship, coords, direction);
     //   console.log(this.gameboard);
   }
 }
