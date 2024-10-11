@@ -28,20 +28,6 @@ export class Gameboard {
       // Check for whether selected tiles are empty
 
       if (direction === "horizontal") {
-        let YCoords = Number(coords.split(",")[1]) + i;
-        currentCoords = `${coords.split(",")[0]},${YCoords}`;
-
-        console.log(currentCoords, this.gameboard.get(currentCoords));
-        if (
-          YCoords < 0 ||
-          YCoords > 9 ||
-          this.gameboard.get(currentCoords).ship !== null
-        ) {
-          return false;
-        } else {
-          tilesArray.push(currentCoords);
-        }
-      } else if (direction === "vertical") {
         let XCoords = Number(coords.split(",")[0]) + i;
         currentCoords = `${XCoords},${coords.split(",")[1]}`;
 
@@ -49,6 +35,20 @@ export class Gameboard {
         if (
           XCoords < 0 ||
           XCoords > 9 ||
+          this.gameboard.get(currentCoords).ship !== null
+        ) {
+          return false;
+        } else {
+          tilesArray.push(currentCoords);
+        }
+      } else if (direction === "vertical") {
+        let YCoords = Number(coords.split(",")[1]) + i;
+        currentCoords = `${coords.split(",")[0]},${YCoords}`;
+
+        console.log(currentCoords, this.gameboard.get(currentCoords));
+        if (
+          YCoords < 0 ||
+          YCoords > 9 ||
           this.gameboard.get(currentCoords).ship !== null
         ) {
           return false;
