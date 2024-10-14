@@ -85,7 +85,22 @@ function setupDropzone() {
       const coordsX = Number(event.target.dataset.x);
       const coordsY = Number(event.target.dataset.y);
 
+      const lightgreen = "rgb(144, 238, 144, 0.5)";
+      const red = "rgb(255, 0, 0, 0.5)";
+
+      let highlightColor = lightgreen;
+
       coordsArray.length = 0;
+
+      if (draggedData.direction === "vertical") {
+        if (coordsX + Number(draggedData.length) > 10) {
+          highlightColor = red;
+        }
+      } else if (draggedData.direction === "horizontal") {
+        if (coordsY + Number(draggedData.length) > 10) {
+          highlightColor = red;
+        }
+      }
 
       // Push coordinates based on length and direction of ship (for highlighting)
       for (let i = 0; i < draggedData.length; i++) {
@@ -101,38 +116,10 @@ function setupDropzone() {
           `[data-x='${coords.split(",")[0]}'][data-y='${coords.split(",")[1]}']`
         );
         if (cell) {
-          cell.style.backgroundColor = "lightgreen";
+          cell.style.backgroundColor = highlightColor;
         }
       });
     });
-
-    // tile.addEventListener("dragleave", (event) => {
-    //   const coordsX = Number(event.target.dataset.x);
-    //   const coordsY = Number(event.target.dataset.y);
-
-    //   const previousCoordsArray = [];
-    //   for (let i = 0; i < draggedData.length; i++) {
-    //     if (draggedData.direction === "horizontal") {
-    //       previousCoordsArray.push(`${coordsX},${coordsY + i}`);
-    //     } else {
-    //       previousCoordsArray.push(`${coordsX + i},${coordsY}`);
-    //     }
-    //   }
-
-    //   // Find coords that ship element has just left, but not in new dragenter event
-    //   const coordsJustLeft = previousCoordsArray.filter(
-    //     (value) => !coordsArray.includes(value)
-    //   );
-
-    //   coordsJustLeft.forEach((coords) => {
-    //     const cell = document.querySelector(
-    //       `[data-x='${coords.split(",")[0]}'][data-y='${coords.split(",")[1]}']`
-    //     );
-    //     if (cell) {
-    //       cell.style.backgroundColor = "";
-    //     }
-    //   });
-    // });
 
     tile.addEventListener("drop", (event) => {
       event.preventDefault(); // Prevent default behavior
@@ -141,7 +128,7 @@ function setupDropzone() {
 
       console.log("Dropped data:", length);
       console.log("Hovered over element:", tile.id); // Get the ID of the hovered element
-      tile.style.backgroundColor = ""; // Reset background color
+      clearHighlights(); // Reset background color
     });
   });
 }
