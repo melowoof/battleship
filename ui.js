@@ -87,22 +87,21 @@ function setupDropzone() {
       clearHighlights();
       const coordsX = Number(event.target.dataset.x);
       const coordsY = Number(event.target.dataset.y);
-
       const lightgreen = "rgb(144, 238, 144, 0.5)";
       const red = "rgb(255, 0, 0, 0.5)";
+
+      const validity = areTilesValid(
+        event.target,
+        draggedData.length,
+        draggedData.direction
+      );
 
       let highlightColor = lightgreen;
 
       coordsArray.length = 0;
 
-      if (draggedData.direction === "horizontal") {
-        if (coordsX + Number(draggedData.length) > 10) {
-          highlightColor = red;
-        }
-      } else if (draggedData.direction === "vertical") {
-        if (coordsY + Number(draggedData.length) > 10) {
-          highlightColor = red;
-        }
+      if (validity === false) {
+        highlightColor = red;
       }
 
       // Push coordinates based on length and direction of ship (for highlighting)
@@ -134,7 +133,6 @@ function setupDropzone() {
 function drop(event) {
   event.preventDefault(); // Prevent default behavior
   const shipElement = document.createElement("div");
-
   shipElement.className = "ship";
   shipElement.dataset.length = 3;
   shipElement.dataset.direction = "horizontal";
@@ -191,6 +189,7 @@ function getTilesArray(tile, shipLength, shipDirection) {
 }
 
 function areTilesValid(tile, shipLength, shipDirection) {
+  if (tile.classList.contains("ship")) return false;
   const tilesArray = getTilesArray(tile, shipLength, shipDirection);
 
   const coordsX = Number(tile.dataset.x);
@@ -206,6 +205,11 @@ function areTilesValid(tile, shipLength, shipDirection) {
     }
   }
 
+  tilesArray.forEach((tile) => {
+    const surroundingTiles = getSurroundingTiles(tile);
+    tilesArray.push(...surroundingTiles);
+  });
+
   for (const tile of tilesArray) {
     if (tile && tile.classList.contains("occupied")) {
       return false;
@@ -213,6 +217,39 @@ function areTilesValid(tile, shipLength, shipDirection) {
   }
 
   return true;
+}
+
+function getSurroundingTiles(tile) {
+  const coordsX = Number(tile.dataset.x);
+  const coordsY = Number(tile.dataset.y);
+  const surroundingTiles = [];
+
+  const offsets = [
+    [-1, -1],
+    [0, -1],
+    [1, -1],
+    [-1, 0],
+    [1, 0],
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+  ];
+
+  offsets.forEach(([dx, dy]) => {
+    const newX = coordsX + dx;
+    const newY = coordsY + dy;
+
+    if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
+      const surroundingTile = document.querySelector(
+        `[data-x='${newX}'][data-y='${newY}']`
+      );
+      if (surroundingTile) {
+        surroundingTiles.push(surroundingTile);
+      }
+    }
+  });
+
+  return surroundingTiles;
 }
 
 function clearHighlights() {
