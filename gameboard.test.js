@@ -19,8 +19,8 @@ describe("Gameboard test", () => {
     gameboard.placeShip(ship, "3,4", "horizontal");
 
     expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
-    expect(gameboard.gameboard.get("3,5").ship).toBe(ship);
-    expect(gameboard.gameboard.get("3,6").ship).toBe(ship);
+    expect(gameboard.gameboard.get("4,4").ship).toBe(ship);
+    expect(gameboard.gameboard.get("5,4").ship).toBe(ship);
   });
     
   test("ship is correctly placed vertically on tile", () => {
@@ -29,8 +29,8 @@ describe("Gameboard test", () => {
     gameboard.placeShip(ship, "3,4", "vertical");
 
     expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
-    expect(gameboard.gameboard.get("4,4").ship).toBe(ship);
-    expect(gameboard.gameboard.get("5,4").ship).toBe(ship);
+    expect(gameboard.gameboard.get("3,5").ship).toBe(ship);
+    expect(gameboard.gameboard.get("3,6").ship).toBe(ship);
   });
 
   test("ship should be sunk", () => {
@@ -38,8 +38,8 @@ describe("Gameboard test", () => {
 
     gameboard.placeShip(ship, "3,4", "horizontal");
     gameboard.receiveAttack("3,4");
-    gameboard.receiveAttack("3,5");
-    gameboard.receiveAttack("3,6");
+    gameboard.receiveAttack("4,4");
+    gameboard.receiveAttack("5,4");
 
     expect(ship.sunk).toBe(true);
   });
@@ -51,8 +51,8 @@ describe("Gameboard test", () => {
     expect(gameboard.shipsLeft()).toBe(1);
 
     gameboard.receiveAttack("3,4");
-    gameboard.receiveAttack("3,5");
-    gameboard.receiveAttack("3,6");
+    gameboard.receiveAttack("4,4");
+    gameboard.receiveAttack("5,4");
 
     expect(gameboard.shipsLeft()).toBe(0);
   });

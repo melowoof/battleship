@@ -19,7 +19,7 @@ export class Gameboard {
     return this.gameboard.size;
   }
 
-  placeShip(ship, coords, direction = "horizontal") {
+  placeShip(ship, coords, direction) {
     // CHeck for out of bounds
     if (direction === "horizontal") {
       if (ship.length + Number(coords.split(",")[0]) > 9) {

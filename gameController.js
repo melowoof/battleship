@@ -21,9 +21,15 @@ export class GameController {
   createShips() {
     const shipsArray = [];
 
-    for (let i = 1; i <= 5; i++) {
-      shipsArray.push(new Ship(i));
-    }
+    shipsArray.push(new Ship(1));
+    shipsArray.push(new Ship(2));
+    shipsArray.push(new Ship(3));
+    shipsArray.push(new Ship(3));
+    shipsArray.push(new Ship(4));
+    shipsArray.push(new Ship(5));
+    // for (let i = 1; i <= 5; i++) {
+    //   shipsArray.push(new Ship(i));
+    // }
     return shipsArray;
   }
 
@@ -36,7 +42,7 @@ export class GameController {
       do {
         coords = `${Math.floor(Math.random() * 10)},${Math.floor(
           Math.random() * 10
-        )}`;          
+        )}`;
         direction = Math.random() < 0.5 ? "horizontal" : "vertical";
 
         result = player.placeShip(shipsArray[i], coords, direction);

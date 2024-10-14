@@ -25,13 +25,13 @@ describe("Test Player class", () => {
   test("attack should correctly sink opponent's ship", () => {
     playerComputer.placeShip(ship1, "3,4", "vertical");
     expect(playerComputer.gameboard.gameboard.get("3,4").ship).toBe(ship1);
-    expect(playerComputer.gameboard.gameboard.get("4,4").ship).toBe(ship1);
+    expect(playerComputer.gameboard.gameboard.get("3,5").ship).toBe(ship1);
 
     playerHuman.attack(playerComputer, "3,4");
-    playerHuman.attack(playerComputer, "4,4");
+    playerHuman.attack(playerComputer, "3,5");
     expect(playerComputer.gameboard.gameboard.get("3,4").hit).toBe(true);
-    expect(playerComputer.gameboard.gameboard.get("4,4").hit).toBe(true);
-    expect(playerComputer.gameboard.gameboard.get("4,4").ship.sunk).toBe(true);
+    expect(playerComputer.gameboard.gameboard.get("3,5").hit).toBe(true);
+    expect(playerComputer.gameboard.gameboard.get("3,5").ship.sunk).toBe(true);
     expect(playerComputer.gameboard.shipsLeft()).toBe(0);
   });
 });

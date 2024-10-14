@@ -1,13 +1,56 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Battle-sub</title>
+</head>
+
+<body>
+  <div id="app">
+    <div id="header">
+      <div class="title">Battlesub.</div>
+      <div class="log-container">
+        <div class="log">Place your subways.</div>
+      </div>
+      <div></div> <!-- Try deleting this one later -->
+    </div>
+    <div id="body">
+      <div class="tables-container">
+        <div class="table-container">
+          <div class="gameboard-container">
+            <div class="table-x-axis"></div>
+            <div class="table-y-axis"></div>
+            <div class="table" id="player1-table">
+              <!-- <div class="ship-test"></div> -->
+            </div>
+          </div>
+          <div class="table-title">Your table</div>
+        </div>
+        <div class="table-container">
+          <div class="gameboard-container">
+            <div class="table-x-axis"></div>
+            <div class="table-y-axis"></div>
+            <div class="table" id="player2-table"></div>
+          </div>
+          <div class="table-title">Opponent's table</div>
+        </div>
+        <div class="ships-container-container">
+          <div class="buttons-container">
+            <div class="buttons" id="randomize">Randomize</div>
+            <div class="buttons" id="reset">Reset</div>
+          </div>
+          <div class="ships-container" id="ships-container">
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="footer">Part of The Odin Project's curriculum - Github</div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+
 </html>
