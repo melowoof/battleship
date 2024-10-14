@@ -12,9 +12,11 @@ export function renderShips(player) {
 
   shipsContainer.innerHTML = "";
 
-  shipsArray.forEach((ship) => {
+  shipsArray.forEach((ship, index) => {
     const shipElement = document.createElement("div");
     const direction = ship.direction;
+
+    shipElement.id = `ship-${index}`;
 
     if (direction === "horizontal") {
       shipElement.style.width = `${ship.length * 40}px`;
@@ -53,13 +55,14 @@ export function renderShips(player) {
   shipsContainer.appendChild(fragment);
 }
 
-function dragStart(e) {
+function dragStart(event) {
   // Store dragged data
-  draggedData.length = e.target.dataset.length;
-  draggedData.direction = e.target.dataset.direction;
+  draggedData.length = event.target.dataset.length;
+  draggedData.direction = event.target.dataset.direction;
 
-  e.dataTransfer.setData("length", draggedData.length);
-  e.dataTransfer.setData("direction", draggedData.direction);
+  event.dataTransfer.setData("length", draggedData.length);
+  event.dataTransfer.setData("direction", draggedData.direction);
+  event.dataTransfer.setData("id", event.target.id);
 }
 
 // function renderPlayer(player) {
@@ -72,7 +75,7 @@ function dragStart(e) {
 // }
 
 function setupDropzone() {
-  const tiles = document.querySelectorAll(".grid-cell");
+  const tiles = document.querySelectorAll("#player1-table > .grid-cell");
   const coordsArray = [];
 
   tiles.forEach((tile) => {
@@ -92,11 +95,11 @@ function setupDropzone() {
 
       coordsArray.length = 0;
 
-      if (draggedData.direction === "vertical") {
+      if (draggedData.direction === "horizontal") {
         if (coordsX + Number(draggedData.length) > 10) {
           highlightColor = red;
         }
-      } else if (draggedData.direction === "horizontal") {
+      } else if (draggedData.direction === "vertical") {
         if (coordsY + Number(draggedData.length) > 10) {
           highlightColor = red;
         }
@@ -104,10 +107,9 @@ function setupDropzone() {
 
       // Push coordinates based on length and direction of ship (for highlighting)
       for (let i = 0; i < draggedData.length; i++) {
-        // Reversed x and y due to document flow
         draggedData.direction === "horizontal"
-          ? coordsArray.push(`${coordsX},${coordsY + i}`)
-          : coordsArray.push(`${coordsX + i},${coordsY}`);
+          ? coordsArray.push(`${coordsX + i},${coordsY}`)
+          : coordsArray.push(`${coordsX},${coordsY + i}`);
       }
 
       // Highlight cells
@@ -122,15 +124,95 @@ function setupDropzone() {
     });
 
     tile.addEventListener("drop", (event) => {
-      event.preventDefault(); // Prevent default behavior
-      const length = event.dataTransfer.getData("length"); // Retrieve data
-      const direction = event.dataTransfer.getData("direction");
+      drop(event);
 
-      console.log("Dropped data:", length);
-      console.log("Hovered over element:", tile.id); // Get the ID of the hovered element
       clearHighlights(); // Reset background color
     });
   });
+}
+
+function drop(event) {
+  event.preventDefault(); // Prevent default behavior
+  const shipElement = document.createElement("div");
+
+  shipElement.className = "ship";
+  shipElement.dataset.length = 3;
+  shipElement.dataset.direction = "horizontal";
+
+  const shipLength = event.dataTransfer.getData("length");
+  const shipDirection = event.dataTransfer.getData("direction");
+  const shipId = event.dataTransfer.getData("id");
+
+  const shipsContainer = document.querySelector(".ships-container");
+  const oldShipElement = document.querySelector(
+    `.ships-container > #${shipId}`
+  );
+
+  if (shipDirection === "horizontal") {
+    shipElement.style.width = `${shipLength * 40}px`;
+    shipElement.style.height = "40px";
+  } else if (shipDirection === "vertical") {
+    shipElement.style.height = `${shipLength * 40}px`;
+    shipElement.style.width = "40px";
+  }
+
+  if (areTilesValid(event.target, shipLength, shipDirection) === true) {
+    const tilesArray = getTilesArray(event.target, shipLength, shipDirection);
+    shipsContainer.removeChild(oldShipElement);
+    event.target.appendChild(shipElement);
+
+    tilesArray.forEach((tile) => {
+      tile.classList.add("occupied");
+    });
+  }
+}
+
+function getTilesArray(tile, shipLength, shipDirection) {
+  const tilesArray = [];
+  const coordsX = Number(tile.dataset.x);
+  const coordsY = Number(tile.dataset.y);
+
+  if (shipDirection === "horizontal") {
+    for (let i = 0; i < shipLength; i++) {
+      const tile = document.querySelector(
+        `[data-x='${coordsX + i}'][data-y='${coordsY}']`
+      );
+      tilesArray.push(tile);
+    }
+  } else if (shipDirection === "vertical") {
+    for (let i = 0; i < shipLength; i++) {
+      const tile = document.querySelector(
+        `[data-x='${coordsX}'][data-y='${coordsY + i}']`
+      );
+      tilesArray.push(tile);
+    }
+  }
+  return tilesArray;
+}
+
+function areTilesValid(tile, shipLength, shipDirection) {
+  const tilesArray = getTilesArray(tile, shipLength, shipDirection);
+
+  const coordsX = Number(tile.dataset.x);
+  const coordsY = Number(tile.dataset.y);
+
+  if (shipDirection === "horizontal") {
+    if (coordsX + Number(shipLength) > 10) {
+      return false;
+    }
+  } else if (shipDirection === "vertical") {
+    if (coordsY + Number(shipLength) > 10) {
+      return false;
+    }
+  }
+
+  for (const tile of tilesArray) {
+    if (tile && tile.classList.contains("occupied")) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function clearHighlights() {
@@ -144,11 +226,11 @@ export function renderGrid() {
   const container = document.querySelectorAll(".table");
   const fragment = document.createDocumentFragment();
 
-  for (let x = 0; x < 10; x++) {
-    for (let y = 0; y < 10; y++) {
+  for (let y = 0; y < 10; y++) {
+    for (let x = 0; x < 10; x++) {
       const div = document.createElement("div");
       div.className = "grid-cell";
-      div.id = `${y},${x}`;
+      div.id = `${x},${y}`;
       div.dataset.x = x;
       div.dataset.y = y;
 

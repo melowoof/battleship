@@ -139,7 +139,7 @@ body,
   justify-content: flex-end;
   gap: 40px;
   opacity: 0.7;
-  color: blue;
+  color: #357989;
 }
 
 .buttons {
@@ -147,7 +147,7 @@ body,
 }
 
 .buttons:hover {
-  color: green;
+  color: #a1392f;
 }
 
 .ships-container {
@@ -166,6 +166,7 @@ body,
   border-radius: 2px;
   /* height: 40px; */
   /* width: 80px; */
+  z-index: 2;
 }
 
 .ship-test {
@@ -179,7 +180,7 @@ body,
 }
 
 .occupied {
-  background-color: red;
+  /* background-color: red; */
 }
 
 #footer {
