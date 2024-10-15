@@ -1,7 +1,10 @@
 const table = document.querySelector("#player1-table");
 let draggedData = {};
 
-function updateTable(tile) {}
+export function updateGrid(player) {
+  const gameboard = player.gameboard.gameboard;
+  console.log(gameboard);
+}
 
 function updateLog(text) {}
 
@@ -64,15 +67,6 @@ function dragStart(event) {
   event.dataTransfer.setData("direction", draggedData.direction);
   event.dataTransfer.setData("id", event.target.id);
 }
-
-// function renderPlayer(player) {
-//   const container = document.querySelectorAll(".table");
-//   const fragment = document.createDocumentFragment();
-
-//   for (let x = 0; x < 10; x++) {
-//     for (let y = 0; y < 10; y++) {}
-//   }
-// }
 
 function setupDropzone() {
   const tiles = document.querySelectorAll("#player1-table > .grid-cell");
@@ -259,7 +253,7 @@ function clearHighlights() {
   });
 }
 
-export function renderGrid() {
+export function buildGrid() {
   const container = document.querySelectorAll(".table");
   const fragment = document.createDocumentFragment();
 
@@ -281,7 +275,7 @@ export function renderGrid() {
   setupDropzone();
 }
 
-export function renderAxis() {
+export function buildAxis() {
   const XAxis = document.querySelectorAll(".table-x-axis");
   const YAxis = document.querySelectorAll(".table-y-axis");
 

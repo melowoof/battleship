@@ -5,7 +5,7 @@ import { Player } from "./player.js";
 export class GameController {
   constructor() {}
 
-  createPlayers(type = "HH") {
+  createPlayers(type = "HC") {
     const player1 = new Player("human");
     let player2;
 
