@@ -106,14 +106,25 @@ body,
 }
 
 .table {
-  outline: 0.1px solid black;
+  background-image: url(images/table-1.png);
+
+  /* outline: 0.1px solid black; */
   display: grid;
+  border-radius: 2px;
   grid-template-columns: repeat(10, 40px);
   grid-template-rows: repeat(10, 40px);
   height: 400px;
   width: 400px;
   grid-column: 2;
   grid-row: 2;
+}
+
+#player1-table {
+  background-image: url(images/table-1.png);
+}
+
+#player2-table {
+  background-image: url(images/table-2.png);
 }
 
 .grid-cell {
@@ -167,6 +178,18 @@ body,
   /* height: 40px; */
   /* width: 80px; */
   z-index: 2;
+}
+
+.grid-cell.hit {
+  background-image: url(images/hit.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.grid-cell.miss {
+  background-image: url(images/miss-white.png);
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .ship-test {

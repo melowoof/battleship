@@ -11,8 +11,12 @@ export class Player {
     opponent.gameboard.receiveAttack(coords);
   }
 
+  receiveAttack(coords) {
+    this.gameboard.receiveAttack(coords);
+  }
+
   placeShip(ship, coords, direction) {
-      return this.gameboard.placeShip(ship, coords, direction);
+    return this.gameboard.placeShip(ship, coords, direction);
     //   console.log(this.gameboard);
   }
 }

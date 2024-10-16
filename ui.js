@@ -1,12 +1,30 @@
-const table = document.querySelector("#player1-table");
 let draggedData = {};
 
-export function updateGrid(player) {
+export function updateGrid(player, tableElement) {
   const gameboard = player.gameboard.gameboard;
-  console.log(gameboard);
+
+  console.log(gameboard.size);
+  gameboard.forEach((cell, coords) => {
+    if (cell.hit) {
+      const tile = tableElement.querySelector(
+        `[data-x="${coords.split(",")[0]}"][data-y="${coords.split(",")[1]}"]`
+      );
+      if (cell.ship) {
+        tile.classList.add("hit");
+        // updateLog("It's a hit! But you're probably just lucky");
+      } else {
+        tile.classList.add("miss");
+        // updateLog("It's a miss! Are you even trying?");
+      }
+    }
+  });
 }
 
-function updateLog(text) {}
+function updateLog(text) {
+ console.log("hi");
+  const log = document.querySelector("#log");
+  log.textContent = text;
+}
 
 export function renderShips(player) {
   const shipsArray = player.gameboard.shipsArray;
@@ -66,97 +84,6 @@ function dragStart(event) {
   event.dataTransfer.setData("length", draggedData.length);
   event.dataTransfer.setData("direction", draggedData.direction);
   event.dataTransfer.setData("id", event.target.id);
-}
-
-function setupDropzone() {
-  const tiles = document.querySelectorAll("#player1-table > .grid-cell");
-  const coordsArray = [];
-
-  tiles.forEach((tile) => {
-    tile.addEventListener("dragover", (event) => {
-      event.preventDefault(); // Prevent default to allow drop
-    });
-
-    tile.addEventListener("dragenter", (event) => {
-      clearHighlights();
-      const coordsX = Number(event.target.dataset.x);
-      const coordsY = Number(event.target.dataset.y);
-      const lightgreen = "rgb(144, 238, 144, 0.5)";
-      const red = "rgb(255, 0, 0, 0.5)";
-
-      const validity = areTilesValid(
-        event.target,
-        draggedData.length,
-        draggedData.direction
-      );
-
-      let highlightColor = lightgreen;
-
-      coordsArray.length = 0;
-
-      if (validity === false) {
-        highlightColor = red;
-      }
-
-      // Push coordinates based on length and direction of ship (for highlighting)
-      for (let i = 0; i < draggedData.length; i++) {
-        draggedData.direction === "horizontal"
-          ? coordsArray.push(`${coordsX + i},${coordsY}`)
-          : coordsArray.push(`${coordsX},${coordsY + i}`);
-      }
-
-      // Highlight cells
-      coordsArray.forEach((coords) => {
-        const cell = document.querySelector(
-          `[data-x='${coords.split(",")[0]}'][data-y='${coords.split(",")[1]}']`
-        );
-        if (cell) {
-          cell.style.backgroundColor = highlightColor;
-        }
-      });
-    });
-
-    tile.addEventListener("drop", (event) => {
-      drop(event);
-
-      clearHighlights(); // Reset background color
-    });
-  });
-}
-
-function drop(event) {
-  event.preventDefault(); // Prevent default behavior
-  const shipElement = document.createElement("div");
-  shipElement.className = "ship";
-  shipElement.dataset.length = 3;
-  shipElement.dataset.direction = "horizontal";
-
-  const shipLength = event.dataTransfer.getData("length");
-  const shipDirection = event.dataTransfer.getData("direction");
-  const shipId = event.dataTransfer.getData("id");
-
-  const shipsContainer = document.querySelector(".ships-container");
-  const oldShipElement = document.querySelector(
-    `.ships-container > #${shipId}`
-  );
-
-  if (shipDirection === "horizontal") {
-    shipElement.style.width = `${shipLength * 40}px`;
-    shipElement.style.height = "40px";
-  } else if (shipDirection === "vertical") {
-    shipElement.style.height = `${shipLength * 40}px`;
-    shipElement.style.width = "40px";
-  }
-
-  if (areTilesValid(event.target, shipLength, shipDirection) === true) {
-    const tilesArray = getTilesArray(event.target, shipLength, shipDirection);
-    shipsContainer.removeChild(oldShipElement);
-    event.target.appendChild(shipElement);
-
-    tilesArray.forEach((tile) => {
-      tile.classList.add("occupied");
-    });
-  }
 }
 
 function getTilesArray(tile, shipLength, shipDirection) {
@@ -253,7 +180,7 @@ function clearHighlights() {
   });
 }
 
-export function buildGrid() {
+export function buildPlayerGrid(player1, player2) {
   const container = document.querySelectorAll(".table");
   const fragment = document.createDocumentFragment();
 
@@ -272,7 +199,114 @@ export function buildGrid() {
   container.forEach((element) => {
     element.appendChild(fragment.cloneNode(true));
   });
-  setupDropzone();
+
+  setupPlayerBoard(player1);
+  setupOpponentBoard(player2);
+}
+
+function setupOpponentBoard(player) {
+  const table = document.querySelector("#player2-table");
+  const tiles = document.querySelectorAll("#player2-table > .grid-cell");
+  tiles.forEach((tile) => {
+    tile.addEventListener("click", (event) => {
+      // console.log(player);
+      player.receiveAttack(
+        `${event.target.dataset.x},${event.target.dataset.y}`
+      );
+      updateGrid(player, table);
+    });
+  });
+}
+
+function setupPlayerBoard(player) {
+  const tiles = document.querySelectorAll("#player1-table > .grid-cell");
+  const coordsArray = [];
+
+  tiles.forEach((tile) => {
+    tile.addEventListener("dragover", (event) => {
+      event.preventDefault(); // Prevent default to allow drop
+    });
+
+    tile.addEventListener("dragenter", (event) => {
+      clearHighlights();
+      const coordsX = Number(event.target.dataset.x);
+      const coordsY = Number(event.target.dataset.y);
+      const lightgreen = "rgb(144, 238, 144, 0.5)";
+      const red = "rgb(255, 0, 0, 0.5)";
+
+      const validity = areTilesValid(
+        event.target,
+        draggedData.length,
+        draggedData.direction
+      );
+
+      let highlightColor = lightgreen;
+
+      coordsArray.length = 0;
+
+      if (validity === false) {
+        highlightColor = red;
+      }
+
+      // Push coordinates based on length and direction of ship (for highlighting)
+      for (let i = 0; i < draggedData.length; i++) {
+        draggedData.direction === "horizontal"
+          ? coordsArray.push(`${coordsX + i},${coordsY}`)
+          : coordsArray.push(`${coordsX},${coordsY + i}`);
+      }
+
+      // Highlight cells
+      coordsArray.forEach((coords) => {
+        const cell = document.querySelector(
+          `[data-x='${coords.split(",")[0]}'][data-y='${coords.split(",")[1]}']`
+        );
+        if (cell) {
+          cell.style.backgroundColor = highlightColor;
+        }
+      });
+    });
+
+    tile.addEventListener("drop", (event) => {
+      dropShip(event);
+
+      clearHighlights(); // Reset background color
+    });
+  });
+}
+
+function dropShip(event) {
+  event.preventDefault(); // Prevent default behavior
+  const shipElement = document.createElement("div");
+  shipElement.className = "ship";
+  shipElement.dataset.length = 3;
+  shipElement.dataset.direction = "horizontal";
+
+  const shipLength = event.dataTransfer.getData("length");
+  const shipDirection = event.dataTransfer.getData("direction");
+  const shipId = event.dataTransfer.getData("id");
+
+  const shipsContainer = document.querySelector(".ships-container");
+  const oldShipElement = document.querySelector(
+    `.ships-container > #${shipId}`
+  );
+
+  if (shipDirection === "horizontal") {
+    shipElement.style.width = `${shipLength * 40}px`;
+    shipElement.style.height = "40px";
+  } else if (shipDirection === "vertical") {
+    shipElement.style.height = `${shipLength * 40}px`;
+    shipElement.style.width = "40px";
+  }
+
+  if (areTilesValid(event.target, shipLength, shipDirection) === true) {
+    const tilesArray = getTilesArray(event.target, shipLength, shipDirection);
+    shipsContainer.removeChild(oldShipElement);
+    event.target.appendChild(shipElement);
+
+    tilesArray.forEach((tile) => {
+      tile.classList.add("occupied");
+    });
+  }
 }
 
 export function buildAxis() {

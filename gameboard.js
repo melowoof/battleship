@@ -15,10 +15,6 @@ export class Gameboard {
     return gameboard;
   }
 
-  get size() {
-    return this.gameboard.size;
-  }
-
   placeShip(ship, coords, direction) {
     // CHeck for out of bounds
     if (direction === "horizontal") {
