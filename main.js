@@ -1,6 +1,6 @@
 import { GameController } from "./src/js/utils/gameController.js";
-import "./style.css";
-import "./normalize.css";
+import "./src/css/style.css";
+import "./src/css/normalize.css";
 import { buildPlayerGrid, renderShips, buildAxis } from "./src/js/ui/ui.js";
 
 const gameController = new GameController();

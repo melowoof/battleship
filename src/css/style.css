@@ -120,11 +120,11 @@ body,
 }
 
 #player1-table {
-  background-image: url(images/table-1.png);
+  /* background-image: url(src/assets/images/table-1.png); */
 }
 
 #player2-table {
-  background-image: url(images/table-2.png);
+  /* background-image: url(src/assets/images/table-2.png); */
 }
 
 .grid-cell {
