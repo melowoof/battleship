@@ -1,7 +1,7 @@
 import { GameController } from "./gameController.js";
 import "./style.css";
 import "./normalize.css";
-import { buildPlayerGrid, renderShips, updateGrid, buildAxis } from "./ui.js";
+import { buildPlayerGrid, renderShips, buildAxis } from "./ui.js";
 
 const gameController = new GameController();
 
@@ -19,7 +19,6 @@ renderShips(player1);
 
 // player1.attack(player1, "9,9");
 
-updateGrid(player1);
 
 console.log(player2.gameboard);
 

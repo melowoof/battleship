@@ -1,9 +1,8 @@
 let draggedData = {};
 
-export function updateGrid(player, tableElement) {
+function updateGrid(player, tableElement) {
   const gameboard = player.gameboard.gameboard;
 
-  console.log(gameboard.size);
   gameboard.forEach((cell, coords) => {
     if (cell.hit) {
       const tile = tableElement.querySelector(
@@ -11,17 +10,31 @@ export function updateGrid(player, tableElement) {
       );
       if (cell.ship) {
         tile.classList.add("hit");
-        // updateLog("It's a hit! But you're probably just lucky");
       } else {
         tile.classList.add("miss");
-        // updateLog("It's a miss! Are you even trying?");
       }
     }
   });
 }
 
+function updateCell(player, tableElement, coords) {
+  const cell = player.gameboard.gameboard.get(coords);
+  const tile = tableElement.querySelector(
+    `[data-x="${coords.split(",")[0]}"][data-y="${coords.split(",")[1]}"]`
+  );
+
+  if (cell.hit) {
+    if (cell.ship) {
+      tile.classList.add("hit");
+      updateLog("It's a hit! But you're probably just lucky");
+    } else {
+      tile.classList.add("miss");
+      updateLog("It's a miss! Are you even trying?");
+    }
+  }
+}
+
 function updateLog(text) {
- console.log("hi");
   const log = document.querySelector("#log");
   log.textContent = text;
 }
@@ -213,7 +226,11 @@ function setupOpponentBoard(player) {
       player.receiveAttack(
         `${event.target.dataset.x},${event.target.dataset.y}`
       );
-      updateGrid(player, table);
+      updateCell(
+        player,
+        table,
+        `${event.target.dataset.x},${event.target.dataset.y}`
+      );
     });
   });
 }
