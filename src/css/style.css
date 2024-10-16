@@ -202,10 +202,6 @@ body,
   grid-column: 4;
 }
 
-.occupied {
-  /* background-color: red; */
-}
-
 #footer {
   margin-top: auto;
   display: grid;

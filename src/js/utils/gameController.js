@@ -1,6 +1,6 @@
-import { Ship } from "./ship.js";
-import { Gameboard } from "./gameboard.js";
-import { Player } from "./player.js";
+import { Ship } from "../game/ship.js";
+import { Gameboard } from "../game/gameboard.js";
+import { Player } from "../game/player.js";
 
 export class GameController {
   constructor() {}
@@ -21,12 +21,12 @@ export class GameController {
   createShips() {
     const shipsArray = [];
 
-    shipsArray.push(new Ship(1));
+    // shipsArray.push(new Ship(1));
     shipsArray.push(new Ship(2));
     shipsArray.push(new Ship(3));
-    shipsArray.push(new Ship(3));
-    shipsArray.push(new Ship(4));
-    shipsArray.push(new Ship(5));
+    // shipsArray.push(new Ship(3));
+    // shipsArray.push(new Ship(4));
+    // shipsArray.push(new Ship(5));
     // for (let i = 1; i <= 5; i++) {
     //   shipsArray.push(new Ship(i));
     // }

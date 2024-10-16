@@ -1,21 +1,21 @@
 let draggedData = {};
 
-function updateGrid(player, tableElement) {
-  const gameboard = player.gameboard.gameboard;
+// function updateGrid(player, tableElement) {
+//   const gameboard = player.gameboard.gameboard;
 
-  gameboard.forEach((cell, coords) => {
-    if (cell.hit) {
-      const tile = tableElement.querySelector(
-        `[data-x="${coords.split(",")[0]}"][data-y="${coords.split(",")[1]}"]`
-      );
-      if (cell.ship) {
-        tile.classList.add("hit");
-      } else {
-        tile.classList.add("miss");
-      }
-    }
-  });
-}
+//   gameboard.forEach((cell, coords) => {
+//     if (cell.hit) {
+//       const tile = tableElement.querySelector(
+//         `[data-x="${coords.split(",")[0]}"][data-y="${coords.split(",")[1]}"]`
+//       );
+//       if (cell.ship) {
+//         tile.classList.add("hit");
+//       } else {
+//         tile.classList.add("miss");
+//       }
+//     }
+//   });
+// }
 
 function updateCell(player, tableElement, coords) {
   const cell = player.gameboard.gameboard.get(coords);
@@ -29,7 +29,7 @@ function updateCell(player, tableElement, coords) {
       updateLog("It's a hit! But you're probably just lucky");
     } else {
       tile.classList.add("miss");
-      updateLog("It's a miss! Are you even trying?");
+      updateLog("Missed! Are you even trying?");
     }
   }
 }
@@ -149,6 +149,13 @@ function areTilesValid(tile, shipLength, shipDirection) {
       return false;
     }
   }
+
+  // Does not work the same way as for of due to scoping
+  //   tilesArray.forEach((tile) => {
+  //     if (tile && tile.classList.contains("occupied")) {
+  //       return false;
+  //     }
+  //   });
 
   return true;
 }

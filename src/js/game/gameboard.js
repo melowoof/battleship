@@ -15,6 +15,37 @@ export class Gameboard {
     return gameboard;
   }
 
+  _getSurroundingCoords(coords) {
+    const coordsX = coords.split(",").map(Number)[0];
+    const coordsY = coords.split(",").map(Number)[1];
+    const surroundingCoords = [];
+
+    const offsets = [
+      [-1, -1],
+      [0, -1],
+      [1, -1],
+      [-1, 0],
+      [1, 0],
+      [-1, 1],
+      [0, 1],
+      [1, 1],
+    ];
+
+    offsets.forEach(([dx, dy]) => {
+      const newX = coordsX + dx;
+      const newY = coordsX + dy;
+
+      if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
+        const tempCoords = `${newX},${newY}`;
+        if (tempCoords) {
+          surroundingCoords.push(tempCoords);
+        }
+      }
+    });
+
+    return surroundingCoords;
+  }
+
   placeShip(ship, coords, direction) {
     // CHeck for out of bounds
     if (direction === "horizontal") {
@@ -37,25 +68,45 @@ export class Gameboard {
           coords.split(",")[1]
         }`;
 
-        // console.log(currentCoords, this.gameboard.get(currentCoords));
-        if (this.gameboard.get(currentCoords).ship !== null) {
-          return false;
-        } else {
-          tilesArray.push(currentCoords);
-        }
+        // if (this.gameboard.get(currentCoords).ship !== null) {
+        //   return false;
+        // } else {
+        tilesArray.push(currentCoords);
+        // }
       } else if (direction === "vertical") {
         currentCoords = `${coords.split(",")[0]},${
           Number(coords.split(",")[1]) + i
         }`;
 
-        // console.log(currentCoords, this.gameboard.get(currentCoords));
-        if (this.gameboard.get(currentCoords).ship !== null) {
-          return false;
-        } else {
-          tilesArray.push(currentCoords);
-        }
+        // if (this.gameboard.get(currentCoords).ship !== null) {
+        //   return false;
+        // } else {
+        tilesArray.push(currentCoords);
+        // }
       }
     }
+
+    tilesArray.forEach((tile) => {
+      const surroundingTiles = this._getSurroundingCoords(tile);
+      tilesArray.push(...surroundingTiles);
+    });
+
+    // console.log(tilesArray);
+      const uniqueTilesArray = [...new Set(tilesArray)];
+      console.log(uniqueTilesArray);
+
+    for (const tile of uniqueTilesArray) {
+      if (this.gameboard.get(tile).ship !== null) {
+        return false;
+      }
+    }
+
+    // Does not work the same way as for of due to scoping
+    // tilesArray.forEach((tile) => {
+    //   if (this.gameboard.get(tile).ship !== null) {
+    //     return false;
+    //   }
+    // });
 
     // Get coords array and place ship onto corresponding tiles
     tilesArray.forEach((key) => {
