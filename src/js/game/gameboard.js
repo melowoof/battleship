@@ -1,6 +1,7 @@
 export class Gameboard {
-  constructor() {
-    this.gameboard = this.initGameboard(10);
+  constructor(size = 10) {
+    this.size = size;
+    this.gameboard = this.initGameboard(this.size);
     this.shipsArray = [];
   }
 
@@ -14,6 +15,55 @@ export class Gameboard {
     }
     return gameboard;
   }
+
+  // Returns true if any adjacent tile is occupied by a ship
+  isAdjacentToShip(coords) {
+    const x = Number(coords.split(",")[0]);
+    const y = Number(coords.split(",")[1]);
+
+    const neighbors = [
+      [x - 1, y - 1],
+      [x + 0, y - 1],
+      [x + 1, y - 1],
+      [x - 1, y + 0],
+      [x + 1, y + 0],
+      [x - 1, y + 1],
+      [x + 0, y + 1],
+      [x + 1, y + 1],
+    ];
+
+    // neighbors.some(([nx, ny]) => {
+    //   console.log(this.gameboard.get(`${nx},${ny}`).ship, nx, ny);
+    // });
+
+    return neighbors.some(
+      ([nx, ny]) =>
+        nx >= 0 &&
+        nx < 10 &&
+        ny >= 0 &&
+        ny < 10 &&
+        this.gameboard.get(`${nx},${ny}`).ship
+    );
+  }
+
+  checkPlacement(coords, length, direction, callback) {
+    const x = coords.split(",")[0].map(Number);
+    const y = coords.split(",")[1].map(Number);
+
+    if (direction === "horizontal") {
+      if (x + length > this.size) return false;
+      for (let i = x; i < x + length; i++) {
+        if (callback(i, y)) return false;
+      }
+    } else if (direction === "vertical") {
+      if (y + length > this.size) return false;
+      for (let i = y; i < y + length; i++) {
+        if (callback(x, i)) return false;
+      }
+    }
+  }
+
+  isPlacementValid(coords, length, direction) {}
 
   _getSurroundingCoords(coords) {
     const coordsX = coords.split(",").map(Number)[0];
@@ -33,7 +83,7 @@ export class Gameboard {
 
     offsets.forEach(([dx, dy]) => {
       const newX = coordsX + dx;
-      const newY = coordsX + dy;
+      const newY = coordsY + dy;
 
       if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
         const tempCoords = `${newX},${newY}`;
@@ -47,7 +97,7 @@ export class Gameboard {
   }
 
   placeShip(ship, coords, direction) {
-    // CHeck for out of bounds
+    // Check for out of bounds
     if (direction === "horizontal") {
       if (ship.length + Number(coords.split(",")[0]) > 9) {
         return false;
@@ -67,46 +117,23 @@ export class Gameboard {
         currentCoords = `${Number(coords.split(",")[0]) + i},${
           coords.split(",")[1]
         }`;
-
-        // if (this.gameboard.get(currentCoords).ship !== null) {
-        //   return false;
-        // } else {
         tilesArray.push(currentCoords);
-        // }
       } else if (direction === "vertical") {
         currentCoords = `${coords.split(",")[0]},${
           Number(coords.split(",")[1]) + i
         }`;
-
-        // if (this.gameboard.get(currentCoords).ship !== null) {
-        //   return false;
-        // } else {
         tilesArray.push(currentCoords);
-        // }
       }
     }
 
-    tilesArray.forEach((tile) => {
-      const surroundingTiles = this._getSurroundingCoords(tile);
-      tilesArray.push(...surroundingTiles);
-    });
-
-    // console.log(tilesArray);
-      const uniqueTilesArray = [...new Set(tilesArray)];
-      console.log(uniqueTilesArray);
+    const uniqueTilesArray = [...new Set(tilesArray)];
+    console.log(uniqueTilesArray);
 
     for (const tile of uniqueTilesArray) {
       if (this.gameboard.get(tile).ship !== null) {
         return false;
       }
     }
-
-    // Does not work the same way as for of due to scoping
-    // tilesArray.forEach((tile) => {
-    //   if (this.gameboard.get(tile).ship !== null) {
-    //     return false;
-    //   }
-    // });
 
     // Get coords array and place ship onto corresponding tiles
     tilesArray.forEach((key) => {
