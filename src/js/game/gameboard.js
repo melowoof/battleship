@@ -32,10 +32,6 @@ export class Gameboard {
       [x + 1, y + 1],
     ];
 
-    // neighbors.some(([nx, ny]) => {
-    //   console.log(this.gameboard.get(`${nx},${ny}`).ship, nx, ny);
-    // });
-
     return neighbors.some(
       ([nx, ny]) =>
         nx >= 0 &&
@@ -47,23 +43,28 @@ export class Gameboard {
   }
 
   checkPlacement(coords, length, direction, callback) {
-    const x = coords.split(",")[0].map(Number);
-    const y = coords.split(",")[1].map(Number);
+    const x = Number(coords.split(",")[0]);
+    const y = Number(coords.split(",")[1]);
 
     if (direction === "horizontal") {
       if (x + length > this.size) return false;
       for (let i = x; i < x + length; i++) {
-        if (callback(i, y)) return false;
+        if (callback(`${i},${y}`)) return false;
       }
     } else if (direction === "vertical") {
       if (y + length > this.size) return false;
       for (let i = y; i < y + length; i++) {
-        if (callback(x, i)) return false;
+        if (callback(`${x},${i}`)) return false;
       }
     }
+    return true;
   }
 
-  isPlacementValid(coords, length, direction) {}
+  isPlacementValid(coords, length, direction) {
+    return this.checkPlacement(coords, length, direction, (shipCoords) => {
+      return this.isAdjacentToShip(shipCoords);
+    });
+  }
 
   _getSurroundingCoords(coords) {
     const coordsX = coords.split(",").map(Number)[0];
@@ -127,7 +128,7 @@ export class Gameboard {
     }
 
     const uniqueTilesArray = [...new Set(tilesArray)];
-    console.log(uniqueTilesArray);
+    // console.log(uniqueTilesArray);
 
     for (const tile of uniqueTilesArray) {
       if (this.gameboard.get(tile).ship !== null) {

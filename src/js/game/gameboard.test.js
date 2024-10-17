@@ -60,10 +60,16 @@ describe("Gameboard", () => {
       gameboard.placeShip(ship, "3,4", "horizontal");
       expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
 
-      console.log(gameboard.gameboard);
-
       expect(gameboard.isAdjacentToShip("3,5")).toBe(true);
       expect(gameboard.isAdjacentToShip("3,6")).toBe(false);
+    });
+
+    it("should return valid placement for a ship", () => {
+      gameboard.placeShip(ship, "3,4", "horizontal");
+      expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
+      
+      expect(gameboard.isPlacementValid("3,5", 3, "horizontal")).toBe(false);
+      expect(gameboard.isPlacementValid("3,6", 3, "horizontal")).toBe(true);
     });
   });
 });
