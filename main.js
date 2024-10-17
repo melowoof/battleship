@@ -10,15 +10,15 @@ const player1 = playersArray[0];
 const player2 = playersArray[1];
 const shipsArray = gameController.createShips();
 
-gameController.populateGameboard(player1, shipsArray);
-gameController.populateGameboard(player2, shipsArray);
+// gameController.populateGameboard(player1, shipsArray);
+// gameController.populateGameboard(player2, shipsArray);
 
 buildAxis();
 buildPlayerGrid(player1, player2);
-renderShips(player1);
+renderShips(shipsArray);
 
 // player1.attack(player1, "9,9");
 
-console.log(player2.gameboard);
+// console.log(player2.gameboard);
 
 function resetGridLogic() {}

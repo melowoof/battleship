@@ -39,8 +39,8 @@ function updateLog(text) {
   log.textContent = text;
 }
 
-export function renderShips(player) {
-  const shipsArray = player.gameboard.shipsArray;
+export function renderShips(shipsArray) {
+  // const shipsArray = player.gameboard.shipsArray;
   const shipsContainer = document.querySelector("#ships-container");
   const fragment = document.createDocumentFragment();
 
@@ -211,8 +211,12 @@ export function buildPlayerGrid(player1, player2) {
       div.id = `${x},${y}`;
       div.dataset.x = x;
       div.dataset.y = y;
+      
+      if (player1.gameboard.gameboard.get(`${x},${y}`).ship) {
+        div.style.backgroundColor = "red"
+      }
 
-      div.textContent = div.id;
+      // div.textContent = div.id;
 
       fragment.appendChild(div);
     }
@@ -260,11 +264,19 @@ function setupPlayerBoard(player) {
       const lightgreen = "rgb(144, 238, 144, 0.5)";
       const red = "rgb(255, 0, 0, 0.5)";
 
-      const validity = areTilesValid(
-        event.target,
+      // const validity = areTilesValid(
+      //   event.target,
+      //   draggedData.length,
+      //   draggedData.direction
+      // );
+
+      const validity = player.gameboard.isPlacementValid(
+        event.target.id,
         draggedData.length,
         draggedData.direction
       );
+      
+      // console.log(validity);
 
       let highlightColor = lightgreen;
 
