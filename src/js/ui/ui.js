@@ -212,6 +212,8 @@ export function buildPlayerGrid(player1, player2) {
       div.dataset.x = x;
       div.dataset.y = y;
 
+      div.textContent = div.id;
+
       fragment.appendChild(div);
     }
   }
