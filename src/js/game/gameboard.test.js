@@ -20,7 +20,7 @@ describe("Gameboard", () => {
       gameboard.placeShip(ship, "3,4", "horizontal");
 
       expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
-      expect(gameboard.gameboard.get("4,4").ship).toBe(ship);
+      expect(gameboard.gameboard.get("4,4").ship.direction).toBe("horizontal");
       expect(gameboard.gameboard.get("5,4").ship).toBe(ship);
     });
 
@@ -28,7 +28,7 @@ describe("Gameboard", () => {
       gameboard.placeShip(ship, "3,4", "vertical");
 
       expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
-      expect(gameboard.gameboard.get("3,5").ship).toBe(ship);
+      expect(gameboard.gameboard.get("3,5").ship.direction).toBe("vertical");
       expect(gameboard.gameboard.get("3,6").ship).toBe(ship);
     });
   });
@@ -67,9 +67,47 @@ describe("Gameboard", () => {
     it("should return valid placement for a ship", () => {
       gameboard.placeShip(ship, "3,4", "horizontal");
       expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
-      
+
       expect(gameboard.isPlacementValid("3,5", 3, "horizontal")).toBe(false);
       expect(gameboard.isPlacementValid("3,6", 3, "horizontal")).toBe(true);
+    });
+  });
+
+  describe("check ship removal", () => {
+    it("should remove ship of length 1", () => {
+      const ship1 = new Ship(1);
+
+      gameboard.placeShip(ship1, "3,4", "horizontal");
+      expect(gameboard.gameboard.get("3,4").ship).toBe(ship1);
+
+      gameboard.removeShip("3,4");
+      expect(gameboard.gameboard.get("3,4").ship).toBe(null);
+    });
+
+    it("should remove ship of length 3 on horizontal axis", () => {
+      gameboard.placeShip(ship, "3,4", "horizontal");
+      expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
+      expect(gameboard.gameboard.get("4,4").ship).toBe(ship);
+      expect(gameboard.gameboard.get("5,4").ship).toBe(ship);
+      expect(gameboard.gameboard.get("6,4").ship).toBe(null);
+
+      gameboard.removeShip("3,4");
+      expect(gameboard.gameboard.get("3,4").ship).toBe(null);
+      expect(gameboard.gameboard.get("4,4").ship).toBe(null);
+      expect(gameboard.gameboard.get("5,4").ship).toBe(null);
+    });
+
+    it("should remove ship of length 3 on vertical axis", () => {
+      gameboard.placeShip(ship, "3,4", "vertical");
+      expect(gameboard.gameboard.get("3,4").ship).toBe(ship);
+      expect(gameboard.gameboard.get("3,5").ship).toBe(ship);
+      expect(gameboard.gameboard.get("3,6").ship).toBe(ship);
+      expect(gameboard.gameboard.get("3,7").ship).toBe(null);
+
+      gameboard.removeShip("3,4");
+      expect(gameboard.gameboard.get("3,5").ship).toBe(null);
+      expect(gameboard.gameboard.get("3,6").ship).toBe(null);
+      expect(gameboard.gameboard.get("3,7").ship).toBe(null);
     });
   });
 });
