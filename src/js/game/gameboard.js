@@ -59,7 +59,6 @@ export class Gameboard {
     if (direction === "horizontal") {
       if (x + length > this.size) return false;
       for (let i = x; i < x + length; i++) {
-        console.log(callback(`${i},${y}`));
         if (callback(`${i},${y}`)) return false;
       }
     } else if (direction === "vertical") {
@@ -117,6 +116,7 @@ export class Gameboard {
     }
 
     // Get coords array and place ship onto corresponding tiles
+    ship.direction = direction;
     tilesArray.forEach((key) => {
       this.gameboard.get(key).ship = ship;
     });
@@ -125,6 +125,24 @@ export class Gameboard {
     this.shipsArray.push(ship);
 
     return true;
+  }
+
+  removeShip(startCoords) {
+    const x = Number(startCoords.split(",")[0]);
+    const y = Number(startCoords.split(",")[1]);
+    const ship = this.gameboard.get(startCoords).ship;
+    const shipLength = ship.length;
+    const shipDirection = ship.direction;
+
+    if (shipDirection === "horizontal") {
+      for (let i = x; i < x + shipLength; i++) {
+        this.gameboard.set(`${i},${y}`, { ship: null });
+      }
+    } else if (shipDirection === "vertical") {
+      for (let i = y; i < y + shipLength; i++) {
+        this.gameboard.set(`${x},${i}`, { ship: null });
+      }
+    }
   }
 
   receiveAttack(coords) {
