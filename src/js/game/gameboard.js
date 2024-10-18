@@ -42,13 +42,24 @@ export class Gameboard {
     );
   }
 
+  isShipOnTile(coords) {
+    const x = Number(coords.split(",")[0]);
+    const y = Number(coords.split(",")[1]);
+
+    return this.gameboard.get(`${x},${y}`).ship;
+  }
+
   checkPlacement(coords, length, direction, callback) {
     const x = Number(coords.split(",")[0]);
     const y = Number(coords.split(",")[1]);
+    length = Number(length);
+
+    if (this.isShipOnTile(coords)) return false;
 
     if (direction === "horizontal") {
       if (x + length > this.size) return false;
       for (let i = x; i < x + length; i++) {
+        console.log(callback(`${i},${y}`));
         if (callback(`${i},${y}`)) return false;
       }
     } else if (direction === "vertical") {
@@ -64,37 +75,6 @@ export class Gameboard {
     return this.checkPlacement(coords, length, direction, (shipCoords) => {
       return this.isAdjacentToShip(shipCoords);
     });
-  }
-
-  _getSurroundingCoords(coords) {
-    const coordsX = coords.split(",").map(Number)[0];
-    const coordsY = coords.split(",").map(Number)[1];
-    const surroundingCoords = [];
-
-    const offsets = [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-      [-1, 0],
-      [1, 0],
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-    ];
-
-    offsets.forEach(([dx, dy]) => {
-      const newX = coordsX + dx;
-      const newY = coordsY + dy;
-
-      if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
-        const tempCoords = `${newX},${newY}`;
-        if (tempCoords) {
-          surroundingCoords.push(tempCoords);
-        }
-      }
-    });
-
-    return surroundingCoords;
   }
 
   placeShip(ship, coords, direction) {

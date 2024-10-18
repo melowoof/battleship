@@ -21,9 +21,10 @@ export class GameController {
   createShips() {
     const shipsArray = [];
 
-    // shipsArray.push(new Ship(1));
-    shipsArray.push(new Ship(2));
-    shipsArray.push(new Ship(3));
+    shipsArray.push(new Ship(1));
+    shipsArray.push(new Ship(1));
+    // shipsArray.push(new Ship(2));
+    // shipsArray.push(new Ship(3));
     // shipsArray.push(new Ship(3));
     // shipsArray.push(new Ship(4));
     // shipsArray.push(new Ship(5));
