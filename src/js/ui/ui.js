@@ -345,27 +345,6 @@ export function buildAxis() {
   }
 }
 
-function randomizePlacements(player, shipsMap) {
-  let coords;
-
-  shipsMap.forEach((ship, shipId) => {
-    let result;
-    do {
-      coords = `${Math.floor(Math.random() * 10)},${Math.floor(
-        Math.random() * 10
-      )}`;
-
-      ship.direction = Math.random() < 0.5 ? "horizontal" : "vertical";
-
-      const tile = document.querySelector(
-        `[data-x="${coords.split(",")[0]}"][data-y="${coords.split(",")[1]}"]`
-      );
-      result = placeShip(player, shipId, coords, tile);
-      console.log(result);
-    } while (!result);
-  });
-}
-
 export function buildRandomizeButton(player, shipsMap) {
   const button = document.querySelector("#randomize");
   button.addEventListener("click", (event) => player.randomizeShipPlacement(shipsMap));
