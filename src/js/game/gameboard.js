@@ -6,20 +6,36 @@ export class Gameboard {
   }
 
   initGameboard() {
-    const size = 10;
     const gameboard = new Map();
-    for (let x = 0; x < size; x++) {
-      for (let y = 0; y < size; y++) {
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
         gameboard.set(`${x},${y}`, { hit: false, ship: null });
       }
     }
     return gameboard;
   }
 
+  getX(coords) {
+    return Number(coords.split(",")[0]);
+  }
+
+  getY(coords) {
+    return Number(coords.split(",")[1]);
+  }
+
+  clearBoard() {
+    this.shipsArray.length = 0;
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        this.gameboard.set(`${x},${y}`, { hit: false, ship: null });
+      }
+    }
+  }
+
   // Returns true if any adjacent tile is occupied by a ship
   isAdjacentToShip(coords) {
-    const x = Number(coords.split(",")[0]);
-    const y = Number(coords.split(",")[1]);
+    const x = this.getX(coords);
+    const y = this.getY(coords);
 
     const neighbors = [
       [x - 1, y - 1],
@@ -43,15 +59,15 @@ export class Gameboard {
   }
 
   isShipOnTile(coords) {
-    const x = Number(coords.split(",")[0]);
-    const y = Number(coords.split(",")[1]);
-    
+    const x = this.getX(coords);
+    const y = this.getY(coords);
+
     return this.gameboard.get(`${x},${y}`).ship;
   }
 
   checkPlacement(coords, length, direction, callback) {
-    const x = Number(coords.split(",")[0]);
-    const y = Number(coords.split(",")[1]);
+    const x = this.getX(coords);
+    const y = this.getY(coords);
     length = Number(length);
 
     if (this.isShipOnTile(coords)) return false;
@@ -81,7 +97,7 @@ export class Gameboard {
     if (!this.isPlacementValid(coords, ship.length, ship.direction)) {
       return false;
     }
-    
+
     // Check for out of bounds
     if (direction === "horizontal") {
       if (ship.length + Number(coords.split(",")[0]) > 9) {
@@ -133,8 +149,8 @@ export class Gameboard {
   }
 
   removeShip(startCoords) {
-    const x = Number(startCoords.split(",")[0]);
-    const y = Number(startCoords.split(",")[1]);
+    const x = this.getX(coords);
+    const y = this.getY(coords);
     const ship = this.gameboard.get(startCoords).ship;
     const shipLength = ship.length;
     const shipDirection = ship.direction;
@@ -174,5 +190,21 @@ export class Gameboard {
       }
     }
     return shipsLeft;
+  }
+
+  randomizeShipPlacement(shipsMap) {
+    this.clearBoard();
+    let coords;
+    shipsMap.forEach((ship) => {
+      let result;
+      do {
+        coords = `${Math.floor(Math.random() * 10)},${Math.floor(
+          Math.random() * 10
+        )}`;
+        ship.direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+        result = this.placeShip(ship, coords);
+      } while (!result);
+    });
+    console.log(this.gameboard);
   }
 }

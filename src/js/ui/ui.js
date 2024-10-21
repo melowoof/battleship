@@ -366,9 +366,7 @@ function randomizePlacements(player, shipsMap) {
   });
 }
 
-export function buildRandomizeButton(playerBoard, shipsMap) {
+export function buildRandomizeButton(player, shipsMap) {
   const button = document.querySelector("#randomize");
-  button.addEventListener("click", (event) =>
-    randomizePlacements(playerBoard, shipsMap)
-  );
+  button.addEventListener("click", (event) => player.randomizeShipPlacement(shipsMap));
 }

@@ -19,4 +19,8 @@ export class Player {
     return this.gameboard.placeShip(ship, coords, direction);
     //   console.log(this.gameboard);
   }
+  
+  randomizeShipPlacement(shipsMap) {
+    this.gameboard.randomizeShipPlacement(shipsMap);
+  }
 }
