@@ -1,4 +1,5 @@
 let draggedData = {};
+let unplacedShips = new Map();
 
 // function updateGrid(player, tableElement) {
 //   const gameboard = player.gameboard.gameboard;
@@ -39,23 +40,21 @@ function updateLog(text) {
   log.textContent = text;
 }
 
-export function renderShips(shipsArray) {
-  // const shipsArray = player.gameboard.shipsArray;
+export function renderShips(shipsContainerMap) {
   const shipsContainer = document.querySelector("#ships-container");
   const fragment = document.createDocumentFragment();
 
   shipsContainer.innerHTML = "";
 
-  shipsArray.forEach((ship, index) => {
+  shipsContainerMap.forEach((ship, index) => {
     const shipElement = document.createElement("div");
-    const direction = ship.direction;
-
     shipElement.id = `ship-${index}`;
+    unplacedShips.set(shipElement.id, ship);
 
-    if (direction === "horizontal") {
+    if (ship.direction === "horizontal") {
       shipElement.style.width = `${ship.length * 40}px`;
       shipElement.style.height = "40px";
-    } else if (direction === "vertical") {
+    } else if (ship.direction === "vertical") {
       shipElement.style.height = `${ship.length * 40}px`;
       shipElement.style.width = "40px";
     }
@@ -63,24 +62,34 @@ export function renderShips(shipsArray) {
     shipElement.className = "ship";
     shipElement.draggable = true;
     shipElement.dataset.length = ship.length;
-    shipElement.dataset.direction = direction;
+    shipElement.dataset.direction = ship.direction;
 
-    shipElement.addEventListener("dragstart", dragStart);
+    shipElement.addEventListener("dragstart", (event) => {
+      // Store dragged data in global variable
+      draggedData.length = event.target.dataset.length;
+      draggedData.direction = event.target.dataset.direction;
+
+      event.dataTransfer.setData("length", ship.length);
+      event.dataTransfer.setData("direction", ship.direction);
+      event.dataTransfer.setData("id", event.target.id);
+    });
 
     // Click event listeners to change ship direction
-    shipElement.addEventListener("click", (e) => {
+    shipElement.addEventListener("click", (event) => {
       ship.direction =
-        e.target.dataset.direction === "horizontal" ? "vertical" : "horizontal";
-      if (e.target.dataset.direction === "horizontal") {
-        e.target.style.height = `${ship.length * 40}px`;
-        e.target.style.width = "40px";
-        e.target.dataset.direction = "vertical";
-      } else if (e.target.dataset.direction === "vertical") {
-        e.target.style.width = `${ship.length * 40}px`;
-        e.target.style.height = "40px";
-        e.target.dataset.direction = "horizontal";
+        event.target.dataset.direction === "horizontal"
+          ? "vertical"
+          : "horizontal";
+      if (event.target.dataset.direction === "horizontal") {
+        event.target.style.height = `${ship.length * 40}px`;
+        event.target.style.width = "40px";
+        event.target.dataset.direction = "vertical";
+      } else if (event.target.dataset.direction === "vertical") {
+        event.target.style.width = `${ship.length * 40}px`;
+        event.target.style.height = "40px";
+        event.target.dataset.direction = "horizontal";
       }
-      console.log(e.target.dataset.direction, ship.direction);
+      console.log(event.target.dataset.direction, ship.direction);
     });
 
     fragment.appendChild(shipElement);
@@ -89,108 +98,23 @@ export function renderShips(shipsArray) {
   shipsContainer.appendChild(fragment);
 }
 
-function dragStart(event) {
-  // Store dragged data
-  draggedData.length = event.target.dataset.length;
-  draggedData.direction = event.target.dataset.direction;
-
-  event.dataTransfer.setData("length", draggedData.length);
-  event.dataTransfer.setData("direction", draggedData.direction);
-  event.dataTransfer.setData("id", event.target.id);
-}
-
 function getTilesArray(tile, shipLength, shipDirection) {
   const tilesArray = [];
-  const coordsX = Number(tile.dataset.x);
-  const coordsY = Number(tile.dataset.y);
+  const x = Number(tile.dataset.x);
+  const y = Number(tile.dataset.y);
 
   if (shipDirection === "horizontal") {
     for (let i = 0; i < shipLength; i++) {
-      const tile = document.querySelector(
-        `[data-x='${coordsX + i}'][data-y='${coordsY}']`
-      );
+      const tile = document.querySelector(`[data-x='${x + i}'][data-y='${y}']`);
       tilesArray.push(tile);
     }
   } else if (shipDirection === "vertical") {
     for (let i = 0; i < shipLength; i++) {
-      const tile = document.querySelector(
-        `[data-x='${coordsX}'][data-y='${coordsY + i}']`
-      );
+      const tile = document.querySelector(`[data-x='${x}'][data-y='${y + i}']`);
       tilesArray.push(tile);
     }
   }
   return tilesArray;
-}
-
-function areTilesValid(tile, shipLength, shipDirection) {
-  if (tile.classList.contains("ship")) return false;
-  const tilesArray = getTilesArray(tile, shipLength, shipDirection);
-
-  const coordsX = Number(tile.dataset.x);
-  const coordsY = Number(tile.dataset.y);
-
-  if (shipDirection === "horizontal") {
-    if (coordsX + Number(shipLength) > 10) {
-      return false;
-    }
-  } else if (shipDirection === "vertical") {
-    if (coordsY + Number(shipLength) > 10) {
-      return false;
-    }
-  }
-
-  tilesArray.forEach((tile) => {
-    const surroundingTiles = getSurroundingTiles(tile);
-    tilesArray.push(...surroundingTiles);
-  });
-
-  for (const tile of tilesArray) {
-    if (tile && tile.classList.contains("occupied")) {
-      return false;
-    }
-  }
-
-  // Does not work the same way as for of due to scoping
-  //   tilesArray.forEach((tile) => {
-  //     if (tile && tile.classList.contains("occupied")) {
-  //       return false;
-  //     }
-  //   });
-
-  return true;
-}
-
-function getSurroundingTiles(tile) {
-  const coordsX = Number(tile.dataset.x);
-  const coordsY = Number(tile.dataset.y);
-  const surroundingTiles = [];
-
-  const offsets = [
-    [-1, -1],
-    [0, -1],
-    [1, -1],
-    [-1, 0],
-    [1, 0],
-    [-1, 1],
-    [0, 1],
-    [1, 1],
-  ];
-
-  offsets.forEach(([dx, dy]) => {
-    const newX = coordsX + dx;
-    const newY = coordsY + dy;
-
-    if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
-      const surroundingTile = document.querySelector(
-        `[data-x='${newX}'][data-y='${newY}']`
-      );
-      if (surroundingTile) {
-        surroundingTiles.push(surroundingTile);
-      }
-    }
-  });
-
-  return surroundingTiles;
 }
 
 function clearHighlights() {
@@ -211,9 +135,9 @@ export function buildPlayerGrid(player1, player2) {
       div.id = `${x},${y}`;
       div.dataset.x = x;
       div.dataset.y = y;
-      
+
       if (player1.gameboard.gameboard.get(`${x},${y}`).ship) {
-        div.style.backgroundColor = "red"
+        div.style.backgroundColor = "red";
       }
 
       // div.textContent = div.id;
@@ -259,8 +183,8 @@ function setupPlayerBoard(player) {
 
     tile.addEventListener("dragenter", (event) => {
       clearHighlights();
-      const coordsX = Number(event.target.dataset.x);
-      const coordsY = Number(event.target.dataset.y);
+      const x = Number(event.target.dataset.x);
+      const y = Number(event.target.dataset.y);
       const lightgreen = "rgb(144, 238, 144, 0.5)";
       const red = "rgb(255, 0, 0, 0.5)";
 
@@ -275,7 +199,7 @@ function setupPlayerBoard(player) {
         draggedData.length,
         draggedData.direction
       );
-      
+
       // console.log(validity);
 
       let highlightColor = lightgreen;
@@ -289,8 +213,8 @@ function setupPlayerBoard(player) {
       // Push coordinates based on length and direction of ship (for highlighting)
       for (let i = 0; i < draggedData.length; i++) {
         draggedData.direction === "horizontal"
-          ? coordsArray.push(`${coordsX + i},${coordsY}`)
-          : coordsArray.push(`${coordsX},${coordsY + i}`);
+          ? coordsArray.push(`${x + i},${y}`)
+          : coordsArray.push(`${x},${y + i}`);
       }
 
       // Highlight cells
@@ -305,14 +229,14 @@ function setupPlayerBoard(player) {
     });
 
     tile.addEventListener("drop", (event) => {
-      dropShip(event);
+      dropShip(player, event);
 
       clearHighlights(); // Reset background color
     });
   });
 }
 
-function dropShip(event) {
+function dropShip(player, event) {
   event.preventDefault(); // Prevent default behavior
   const shipElement = document.createElement("div");
   shipElement.className = "ship";
@@ -335,11 +259,19 @@ function dropShip(event) {
     shipElement.style.height = `${shipLength * 40}px`;
     shipElement.style.width = "40px";
   }
-
-  if (areTilesValid(event.target, shipLength, shipDirection) === true) {
+  
+  if (
+    player.gameboard.isPlacementValid(
+      event.target.id,
+      shipLength,
+      shipDirection
+    )
+  ) {
     const tilesArray = getTilesArray(event.target, shipLength, shipDirection);
     shipsContainer.removeChild(oldShipElement);
     event.target.appendChild(shipElement);
+    
+    player.gameboard.placeShip(unplacedShips.get(shipId), event.target.id)
 
     tilesArray.forEach((tile) => {
       tile.classList.add("occupied");

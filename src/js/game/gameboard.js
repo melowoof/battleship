@@ -45,7 +45,7 @@ export class Gameboard {
   isShipOnTile(coords) {
     const x = Number(coords.split(",")[0]);
     const y = Number(coords.split(",")[1]);
-
+    
     return this.gameboard.get(`${x},${y}`).ship;
   }
 
@@ -76,7 +76,12 @@ export class Gameboard {
     });
   }
 
-  placeShip(ship, coords, direction) {
+  placeShip(ship, coords) {
+    const direction = ship.direction;
+    if (!this.isPlacementValid(coords, ship.length, ship.direction)) {
+      return false;
+    }
+    
     // Check for out of bounds
     if (direction === "horizontal") {
       if (ship.length + Number(coords.split(",")[0]) > 9) {
