@@ -18,6 +18,10 @@ let unplacedShips = new Map();
 //   });
 // }
 
+function renderBoard(player, tableElement) {
+  const gameboard = player.gameboard.gameboard;
+}
+
 function updateCell(player, tableElement, coords) {
   const cell = player.gameboard.gameboard.get(coords);
   const tile = tableElement.querySelector(
@@ -48,7 +52,7 @@ export function renderShips(shipsContainerMap) {
 
   shipsContainerMap.forEach((ship, index) => {
     const shipElement = document.createElement("div");
-    shipElement.id = `ship-${index}`;
+    shipElement.id = index;
     unplacedShips.set(shipElement.id, ship);
 
     if (ship.direction === "horizontal") {
@@ -98,10 +102,10 @@ export function renderShips(shipsContainerMap) {
   shipsContainer.appendChild(fragment);
 }
 
-function getTilesArray(tile, shipLength, shipDirection) {
+function getTilesArray(coords, shipLength, shipDirection) {
   const tilesArray = [];
-  const x = Number(tile.dataset.x);
-  const y = Number(tile.dataset.y);
+  const x = Number(coords.split(",")[0]);
+  const y = Number(coords.split(",")[1]);
 
   if (shipDirection === "horizontal") {
     for (let i = 0; i < shipLength; i++) {
@@ -229,55 +233,97 @@ function setupPlayerBoard(player) {
     });
 
     tile.addEventListener("drop", (event) => {
-      dropShip(player, event);
+      event.preventDefault();
+      const shipId = event.dataTransfer.getData("id");
+      const coords = event.target.id;
 
+      placeShip(player, shipId, coords, tile);
       clearHighlights(); // Reset background color
     });
   });
 }
 
-function dropShip(player, event) {
-  event.preventDefault(); // Prevent default behavior
+function placeShip(player, shipId, coords, tile) {
   const shipElement = document.createElement("div");
-  shipElement.className = "ship";
-  shipElement.dataset.length = 3;
-  shipElement.dataset.direction = "horizontal";
+  const ship = unplacedShips.get(shipId);
+  // console.log(unplacedShips);
 
-  const shipLength = event.dataTransfer.getData("length");
-  const shipDirection = event.dataTransfer.getData("direction");
-  const shipId = event.dataTransfer.getData("id");
+  shipElement.className = "ship";
+  shipElement.dataset.length = ship.length;
+  shipElement.dataset.direction = ship.direction;
 
   const shipsContainer = document.querySelector(".ships-container");
   const oldShipElement = document.querySelector(
     `.ships-container > #${shipId}`
   );
 
-  if (shipDirection === "horizontal") {
-    shipElement.style.width = `${shipLength * 40}px`;
+  if (ship.direction === "horizontal") {
+    shipElement.style.width = `${ship.length * 40}px`;
     shipElement.style.height = "40px";
-  } else if (shipDirection === "vertical") {
-    shipElement.style.height = `${shipLength * 40}px`;
+  } else if (ship.direction === "vertical") {
+    shipElement.style.height = `${ship.length * 40}px`;
     shipElement.style.width = "40px";
   }
-  
-  if (
-    player.gameboard.isPlacementValid(
-      event.target.id,
-      shipLength,
-      shipDirection
-    )
-  ) {
-    const tilesArray = getTilesArray(event.target, shipLength, shipDirection);
-    shipsContainer.removeChild(oldShipElement);
-    event.target.appendChild(shipElement);
-    
-    player.gameboard.placeShip(unplacedShips.get(shipId), event.target.id)
+
+  if (player.gameboard.isPlacementValid(coords, ship.length, ship.direction)) {
+    const tilesArray = getTilesArray(coords, ship.length, ship.direction);
+    if (oldShipElement) {
+      shipsContainer.removeChild(oldShipElement);
+    }
+    tile.appendChild(shipElement);
+
+    player.gameboard.placeShip(unplacedShips.get(shipId), coords);
 
     tilesArray.forEach((tile) => {
       tile.classList.add("occupied");
     });
+    return true;
   }
+  return false;
 }
+
+// function dropShip(player, event) {
+//   event.preventDefault(); // Prevent default behavior
+//   const shipElement = document.createElement("div");
+//   shipElement.className = "ship";
+//   shipElement.dataset.length = 3;
+//   shipElement.dataset.direction = "horizontal";
+
+//   const shipLength = event.dataTransfer.getData("length");
+//   const shipDirection = event.dataTransfer.getData("direction");
+//   const shipId = event.dataTransfer.getData("id");
+
+//   const shipsContainer = document.querySelector(".ships-container");
+//   const oldShipElement = document.querySelector(
+//     `.ships-container > #${shipId}`
+//   );
+
+//   if (shipDirection === "horizontal") {
+//     shipElement.style.width = `${shipLength * 40}px`;
+//     shipElement.style.height = "40px";
+//   } else if (shipDirection === "vertical") {
+//     shipElement.style.height = `${shipLength * 40}px`;
+//     shipElement.style.width = "40px";
+//   }
+
+//   if (
+//     player.gameboard.isPlacementValid(
+//       event.target.id,
+//       shipLength,
+//       shipDirection
+//     )
+//   ) {
+//     const tilesArray = getTilesArray(event.target, shipLength, shipDirection);
+//     shipsContainer.removeChild(oldShipElement);
+//     event.target.appendChild(shipElement);
+
+//     player.gameboard.placeShip(unplacedShips.get(shipId), event.target.id);
+
+//     tilesArray.forEach((tile) => {
+//       tile.classList.add("occupied");
+//     });
+//   }
+// }
 
 export function buildAxis() {
   const XAxis = document.querySelectorAll(".table-x-axis");
@@ -297,4 +343,32 @@ export function buildAxis() {
       element.appendChild(YTile.cloneNode(true));
     });
   }
+}
+
+function randomizePlacements(player, shipsMap) {
+  let coords;
+
+  shipsMap.forEach((ship, shipId) => {
+    let result;
+    do {
+      coords = `${Math.floor(Math.random() * 10)},${Math.floor(
+        Math.random() * 10
+      )}`;
+
+      ship.direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+
+      const tile = document.querySelector(
+        `[data-x="${coords.split(",")[0]}"][data-y="${coords.split(",")[1]}"]`
+      );
+      result = placeShip(player, shipId, coords, tile);
+      console.log(result);
+    } while (!result);
+  });
+}
+
+export function buildRandomizeButton(playerBoard, shipsMap) {
+  const button = document.querySelector("#randomize");
+  button.addEventListener("click", (event) =>
+    randomizePlacements(playerBoard, shipsMap)
+  );
 }

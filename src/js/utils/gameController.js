@@ -20,23 +20,26 @@ export class GameController {
 
   createShips() {
     const shipsArray = [];
+    const shipsMap = new Map();
 
     shipsArray.push(new Ship(1));
-    shipsArray.push(new Ship(1));
-    // shipsArray.push(new Ship(2));
-    // shipsArray.push(new Ship(3));
-    // shipsArray.push(new Ship(3));
-    // shipsArray.push(new Ship(4));
-    // shipsArray.push(new Ship(5));
-    // for (let i = 1; i <= 5; i++) {
-    //   shipsArray.push(new Ship(i));
-    // }
-    return shipsArray;
+    // shipsArray.push(new Ship(1));
+    shipsArray.push(new Ship(2));
+    shipsArray.push(new Ship(3));
+    shipsArray.push(new Ship(3));
+    shipsArray.push(new Ship(4));
+    shipsArray.push(new Ship(5));
+
+    // shipsArray.reverse();
+    for (let i = 0; i < shipsArray.length; i++) {
+      shipsMap.set(`ship-${i}`, shipsArray[i]);
+    }
+
+    return shipsMap;
   }
 
   populateGameboard(player, shipsArray) {
     let coords;
-    let direction;
 
     for (let i = 0; i < shipsArray.length; i++) {
       let result;
@@ -44,9 +47,10 @@ export class GameController {
         coords = `${Math.floor(Math.random() * 10)},${Math.floor(
           Math.random() * 10
         )}`;
-        direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+        shipsArray[i].direction =
+          Math.random() < 0.5 ? "horizontal" : "vertical";
 
-        result = player.placeShip(shipsArray[i], coords, direction);
+        result = player.placeShip(shipsArray[i], coords);
       } while (!result);
     }
   }
