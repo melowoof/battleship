@@ -8,14 +8,14 @@ const gameController = new GameController();
 const playersArray = gameController.createPlayers("HC");
 const player1 = playersArray[0];
 const player2 = playersArray[1];
-const shipsArray = gameController.createShips();
+const shipsContainerMap = gameController.createShips();
 
-// gameController.populateGameboard(player1, shipsArray);
-// gameController.populateGameboard(player2, shipsArray);
+// gameController.populateGameboard(player1, shipsContainerMap);
+// gameController.populateGameboard(player2, shipsContainerMap);
 
 buildAxis();
 buildPlayerGrid(player1, player2);
-renderShips(shipsArray);
+renderShips(shipsContainerMap);
 
 // player1.attack(player1, "9,9");
 
