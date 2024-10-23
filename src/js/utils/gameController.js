@@ -22,13 +22,13 @@ export class GameController {
     const shipsArray = [];
     const shipsMap = new Map();
 
-    shipsArray.push(new Ship(1));
+    shipsArray.push(new Ship("Frigate", 1));
     // shipsArray.push(new Ship(1));
-    shipsArray.push(new Ship(2));
-    shipsArray.push(new Ship(3));
-    shipsArray.push(new Ship(3));
-    shipsArray.push(new Ship(4));
-    shipsArray.push(new Ship(5));
+    shipsArray.push(new Ship("Cruiser", 2));
+    shipsArray.push(new Ship("Destroyer", 3));
+    shipsArray.push(new Ship("Submarine", 3));
+    shipsArray.push(new Ship("Carrier", 4));
+    shipsArray.push(new Ship("Tanker", 5));
 
     // shipsArray.reverse();
     for (let i = 0; i < shipsArray.length; i++) {
@@ -38,20 +38,4 @@ export class GameController {
     return shipsMap;
   }
 
-  populateGameboard(player, shipsArray) {
-    let coords;
-
-    for (let i = 0; i < shipsArray.length; i++) {
-      let result;
-      do {
-        coords = `${Math.floor(Math.random() * 10)},${Math.floor(
-          Math.random() * 10
-        )}`;
-        shipsArray[i].direction =
-          Math.random() < 0.5 ? "horizontal" : "vertical";
-
-        result = player.placeShip(shipsArray[i], coords);
-      } while (!result);
-    }
-  }
 }

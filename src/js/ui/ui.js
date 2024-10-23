@@ -1,27 +1,6 @@
 let draggedData = {};
 let unplacedShips = new Map();
 
-// function updateGrid(player, tableElement) {
-//   const gameboard = player.gameboard.gameboard;
-
-//   gameboard.forEach((cell, coords) => {
-//     if (cell.hit) {
-//       const tile = tableElement.querySelector(
-//         `[data-x="${coords.split(",")[0]}"][data-y="${coords.split(",")[1]}"]`
-//       );
-//       if (cell.ship) {
-//         tile.classList.add("hit");
-//       } else {
-//         tile.classList.add("miss");
-//       }
-//     }
-//   });
-// }
-
-function renderBoard(player, tableElement) {
-  const gameboard = player.gameboard.gameboard;
-}
-
 function updateCell(player, tableElement, coords) {
   const cell = player.gameboard.gameboard.get(coords);
   const tile = tableElement.querySelector(
@@ -44,7 +23,7 @@ function updateLog(text) {
   log.textContent = text;
 }
 
-export function renderShips(shipsContainerMap) {
+export function renderShipsContainer(shipsContainerMap) {
   const shipsContainer = document.querySelector("#ships-container");
   const fragment = document.createDocumentFragment();
 
@@ -128,8 +107,7 @@ function clearHighlights() {
   });
 }
 
-export function buildPlayerGrid(player1, player2) {
-  const container = document.querySelectorAll(".table");
+export function renderBoard(player, tableElement) {
   const fragment = document.createDocumentFragment();
 
   for (let y = 0; y < 10; y++) {
@@ -140,49 +118,88 @@ export function buildPlayerGrid(player1, player2) {
       div.dataset.x = x;
       div.dataset.y = y;
 
-      if (player1.gameboard.gameboard.get(`${x},${y}`).ship) {
+      if (player.gameboard.gameboard.get(`${x},${y}`).ship) {
         div.style.backgroundColor = "red";
       }
-
-      // div.textContent = div.id;
 
       fragment.appendChild(div);
     }
   }
 
-  container.forEach((element) => {
-    element.appendChild(fragment.cloneNode(true));
-  });
+  tableElement.appendChild(fragment);
 
-  setupPlayerBoard(player1);
-  setupOpponentBoard(player2);
+  const tiles = tableElement.querySelectorAll(".grid-cell");
+  tiles.forEach((tile) => {
+    const cell = player.gameboard.gameboard.get(
+      `${tile.dataset.x},${tile.dataset.y}`
+    );
+    if (cell.hit) {
+      if (cell.ship) {
+        tile.classList.add("hit");
+      } else {
+        tile.classList.add("miss");
+      }
+    }
+  });
 }
 
-function setupOpponentBoard(player) {
-  const table = document.querySelector("#player2-table");
-  const tiles = document.querySelectorAll("#player2-table > .grid-cell");
+function renderShips(player, tableElement) {
+  const ships = tableElement.querySelectorAll(".ship");
+  ships.forEach((element) => {
+    element.remove();
+  });
+
+  player.gameboard.shipPlacements.forEach((ship, coords) => {
+    const tile = tableElement.querySelector(
+      `[data-x="${coords.split(",")[0]}"][data-y="${coords.split(",")[1]}"]`
+    );
+    // console.log(tile);
+
+    const shipElement = document.createElement("div");
+    shipElement.id = coords;
+    unplacedShips.set(shipElement.id, ship);
+
+    if (ship.direction === "horizontal") {
+      shipElement.style.width = `${ship.length * 40}px`;
+      shipElement.style.height = "40px";
+    } else if (ship.direction === "vertical") {
+      shipElement.style.height = `${ship.length * 40}px`;
+      shipElement.style.width = "40px";
+    }
+
+    shipElement.className = "ship";
+    shipElement.draggable = true;
+    shipElement.dataset.length = ship.length;
+    shipElement.dataset.direction = ship.direction;
+
+    tile.appendChild(shipElement);
+  });
+}
+
+function renderClickHit(player, tableElement) {
+  const tiles = tableElement.querySelectorAll(".grid-cell");
+
   tiles.forEach((tile) => {
     tile.addEventListener("click", (event) => {
-      // console.log(player);
       player.receiveAttack(
         `${event.target.dataset.x},${event.target.dataset.y}`
       );
       updateCell(
         player,
-        table,
+        tableElement,
         `${event.target.dataset.x},${event.target.dataset.y}`
       );
     });
   });
 }
 
-function setupPlayerBoard(player) {
-  const tiles = document.querySelectorAll("#player1-table > .grid-cell");
+function renderDragAndDrop(player, tableElement) {
+  const tiles = tableElement.querySelectorAll(".grid-cell");
   const coordsArray = [];
 
   tiles.forEach((tile) => {
     tile.addEventListener("dragover", (event) => {
-      event.preventDefault(); // Prevent default to allow drop
+      event.preventDefault();
     });
 
     tile.addEventListener("dragenter", (event) => {
@@ -192,24 +209,15 @@ function setupPlayerBoard(player) {
       const lightgreen = "rgb(144, 238, 144, 0.5)";
       const red = "rgb(255, 0, 0, 0.5)";
 
-      // const validity = areTilesValid(
-      //   event.target,
-      //   draggedData.length,
-      //   draggedData.direction
-      // );
-
       const validity = player.gameboard.isPlacementValid(
         event.target.id,
         draggedData.length,
         draggedData.direction
       );
 
-      // console.log(validity);
-
-      let highlightColor = lightgreen;
-
       coordsArray.length = 0;
 
+      let highlightColor = lightgreen;
       if (validity === false) {
         highlightColor = red;
       }
@@ -221,7 +229,7 @@ function setupPlayerBoard(player) {
           : coordsArray.push(`${x},${y + i}`);
       }
 
-      // Highlight cells
+      // Highlight cells logic
       coordsArray.forEach((coords) => {
         const cell = document.querySelector(
           `[data-x='${coords.split(",")[0]}'][data-y='${coords.split(",")[1]}']`
@@ -282,49 +290,6 @@ function placeShip(player, shipId, coords, tile) {
   return false;
 }
 
-// function dropShip(player, event) {
-//   event.preventDefault(); // Prevent default behavior
-//   const shipElement = document.createElement("div");
-//   shipElement.className = "ship";
-//   shipElement.dataset.length = 3;
-//   shipElement.dataset.direction = "horizontal";
-
-//   const shipLength = event.dataTransfer.getData("length");
-//   const shipDirection = event.dataTransfer.getData("direction");
-//   const shipId = event.dataTransfer.getData("id");
-
-//   const shipsContainer = document.querySelector(".ships-container");
-//   const oldShipElement = document.querySelector(
-//     `.ships-container > #${shipId}`
-//   );
-
-//   if (shipDirection === "horizontal") {
-//     shipElement.style.width = `${shipLength * 40}px`;
-//     shipElement.style.height = "40px";
-//   } else if (shipDirection === "vertical") {
-//     shipElement.style.height = `${shipLength * 40}px`;
-//     shipElement.style.width = "40px";
-//   }
-
-//   if (
-//     player.gameboard.isPlacementValid(
-//       event.target.id,
-//       shipLength,
-//       shipDirection
-//     )
-//   ) {
-//     const tilesArray = getTilesArray(event.target, shipLength, shipDirection);
-//     shipsContainer.removeChild(oldShipElement);
-//     event.target.appendChild(shipElement);
-
-//     player.gameboard.placeShip(unplacedShips.get(shipId), event.target.id);
-
-//     tilesArray.forEach((tile) => {
-//       tile.classList.add("occupied");
-//     });
-//   }
-// }
-
 export function buildAxis() {
   const XAxis = document.querySelectorAll(".table-x-axis");
   const YAxis = document.querySelectorAll(".table-y-axis");
@@ -347,5 +312,10 @@ export function buildAxis() {
 
 export function buildRandomizeButton(player, shipsMap) {
   const button = document.querySelector("#randomize");
-  button.addEventListener("click", (event) => player.randomizeShipPlacement(shipsMap));
+  const table = document.querySelector("#player1-table");
+
+  button.addEventListener("click", (event) => {
+    player.randomizeShipPlacement(shipsMap);
+    renderShips(player, table);
+  });
 }

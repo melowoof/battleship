@@ -3,6 +3,7 @@ export class Gameboard {
     this.size = size;
     this.gameboard = this.initGameboard(this.size);
     this.shipsArray = [];
+    this.shipPlacements = new Map();
   }
 
   initGameboard() {
@@ -25,6 +26,7 @@ export class Gameboard {
 
   clearBoard() {
     this.shipsArray.length = 0;
+    this.shipPlacements.clear();
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
         this.gameboard.set(`${x},${y}`, { hit: false, ship: null });
@@ -92,28 +94,13 @@ export class Gameboard {
     });
   }
 
-  placeShip(ship, coords) {
-    const direction = ship.direction;
-    if (!this.isPlacementValid(coords, ship.length, ship.direction)) {
-      return false;
-    }
-
-    // Check for out of bounds
-    if (direction === "horizontal") {
-      if (ship.length + Number(coords.split(",")[0]) > 9) {
-        return false;
-      }
-    } else if (direction === "vertical") {
-      if (ship.length + Number(coords.split(",")[1]) > 9) {
-        return false;
-      }
-    }
-
+  getTilePlacements(coords, length, direction) {
+    const x = this.getX(coords);
+    const y = this.getY(coords);
     const tilesArray = [];
     let currentCoords;
 
-    for (let i = 0; i < ship.length; i++) {
-      // Check if selected tiles are empty
+    for (let i = 0; i < length; i++) {
       if (direction === "horizontal") {
         currentCoords = `${Number(coords.split(",")[0]) + i},${
           coords.split(",")[1]
@@ -126,15 +113,20 @@ export class Gameboard {
         tilesArray.push(currentCoords);
       }
     }
+    return tilesArray;
+  }
 
-    const uniqueTilesArray = [...new Set(tilesArray)];
-    // console.log(uniqueTilesArray);
-
-    for (const tile of uniqueTilesArray) {
-      if (this.gameboard.get(tile).ship !== null) {
-        return false;
-      }
+  placeShip(ship, coords) {
+    const direction = ship.direction;
+    if (!this.isPlacementValid(coords, ship.length, ship.direction)) {
+      return false;
     }
+
+    const tilesArray = this.getTilePlacements(
+      coords,
+      ship.length,
+      ship.direction
+    );
 
     // Get coords array and place ship onto corresponding tiles
     ship.direction = direction;
@@ -144,6 +136,7 @@ export class Gameboard {
 
     // Push ship into gameboard's ship array
     this.shipsArray.push(ship);
+    this.shipPlacements.set(coords, ship);
 
     return true;
   }
@@ -205,6 +198,6 @@ export class Gameboard {
         result = this.placeShip(ship, coords);
       } while (!result);
     });
-    console.log(this.gameboard);
+    // console.log(this.shipPlacements);
   }
 }
