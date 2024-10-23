@@ -33,7 +33,7 @@ body,
   /* background-color: #fff; */
 }
 
-.log-container {
+.status-container {
   outline: 1px solid black;
   font-weight: 500;
   height: 2.3rem;
