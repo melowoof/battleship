@@ -12,15 +12,19 @@ export class Player {
   }
 
   receiveAttack(coords) {
-    this.gameboard.receiveAttack(coords);
+    return this.gameboard.receiveAttack(coords);
   }
 
   placeShip(ship, coords, direction) {
     return this.gameboard.placeShip(ship, coords, direction);
     //   console.log(this.gameboard);
   }
+
+  randomPlaceShips(shipsMap) {
+    this.gameboard.randomPlaceShips(shipsMap);
+  }
   
-  randomizeShipPlacement(shipsMap) {
-    this.gameboard.randomizeShipPlacement(shipsMap);
+  resetBoard() {
+    this.gameboard.resetBoard();
   }
 }
