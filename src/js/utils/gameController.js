@@ -35,9 +35,9 @@ export class GameController {
     const shipsMap = new Map();
 
     shipsArray.push(new Ship("Frigate", 2));
-    // shipsArray.push(new Ship("Cruiser", 2));
+    shipsArray.push(new Ship("Cruiser", 2));
     shipsArray.push(new Ship("Destroyer", 3));
-    // shipsArray.push(new Ship("Submarine", 3));
+    shipsArray.push(new Ship("Submarine", 3));
     shipsArray.push(new Ship("Carrier", 4));
     shipsArray.push(new Ship("Tanker", 5));
 
