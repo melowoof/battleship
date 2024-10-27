@@ -1,8 +1,14 @@
 html {
   height: 100vh;
-  background-image: url("./src/assets/images/background/ocean.jpg");
-  background-repeat: none;
+  /* background-image: url("./src/assets/images/background/ocean.jpg"); */
+  background-repeat: no-repeat;
   background-size: cover;
+  background: linear-gradient(
+    to bottom,
+    rgb(48, 109, 142),
+    rgb(126, 164, 189),
+    rgb(48, 109, 142)
+  );
 }
 
 body,
@@ -78,7 +84,6 @@ body,
 
 .gameboard-container {
   display: grid;
-  /* background-color: red; */
   grid-template-columns: repeat(11, 40px);
   grid-template-rows: repeat(11, 40px);
 }
@@ -126,7 +131,7 @@ body,
 }
 
 .grid-cell {
-  outline: 1px solid rgb(0, 0, 0, 0.1);
+  outline: 1px solid rgb(0, 0, 0, 0.2);
   /* opacity: 0.05; */
 }
 
@@ -153,19 +158,33 @@ body,
 }
 
 .button {
+  border: none;
+  font-size: 1.2rem;
   /* text-decoration: underline; */
   outline: 1px solid black;
   color: white;
   font-weight: 600;
-  background: linear-gradient(to top, rgb(30, 30, 30, 0.8), rgb(18, 24, 38, 0.6));
-  padding: 2px 5px;
+  background: linear-gradient(
+    to top,
+    rgb(161, 57, 47, 1),
+    rgb(220, 47, 85, 0.8)
+  );
+  padding: 3px 10px;
   border-radius: 2px;
   box-shadow: 0.5px 0.5px 5px black;
   cursor: pointer;
 }
 
-.buttons:hover {
-  background-color: rgb(72, 158, 124);
+.button:hover {
+  background-color: red;
+}
+
+.button:active {
+  box-shadow: none;
+}
+
+.button.unavailable {
+  background: grey;
 }
 
 .ships-container {
@@ -188,13 +207,13 @@ body,
 }
 
 .grid-cell.hit {
-  background-image: url(images/hit.png);
+  background-image: url(../assets/images/cells/hit.png);
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .grid-cell.miss {
-  background-image: url(images/miss-white.png);
+  background-image: url(../assets/images/cells/miss-white.png);
   background-repeat: no-repeat;
   background-position: center;
 }
