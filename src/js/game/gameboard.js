@@ -24,7 +24,7 @@ export class Gameboard {
     return Number(coords.split(",")[1]);
   }
 
-  clearBoard() {
+  resetBoard() {
     this.shipsArray.length = 0;
     this.shipPlacements.clear();
     for (let x = 0; x < this.size; x++) {
@@ -161,13 +161,23 @@ export class Gameboard {
 
   receiveAttack(coords) {
     const tile = this.gameboard.get(coords);
-    // console.log(tile);
+
+    // if (tile.hit) {
+    //   return false;
+    // }
+
+    // tile.hit = true;
+    // if (tile.ship !== null) {
+    //   tile.ship.hit();
+    // }
+
+    // return true;
 
     if (tile.hit) {
-      return -1;
+      return 0;
     } else if (!tile.hit && tile.ship === null) {
       tile.hit = true;
-      return 0;
+      return -1;
     } else if (!tile.hit && tile.ship !== null) {
       tile.hit = true;
       tile.ship.hit();
@@ -185,8 +195,8 @@ export class Gameboard {
     return shipsLeft;
   }
 
-  randomizeShipPlacement(shipsMap) {
-    this.clearBoard();
+  randomPlaceShips(shipsMap) {
+    this.resetBoard();
     let coords;
     shipsMap.forEach((ship) => {
       let result;
